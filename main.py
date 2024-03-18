@@ -2,6 +2,7 @@ import cv2
 import eel
 import base64
 import mysql.connector
+from backend import *
 
 # MySQL Connection Configuration
 db_config = {
