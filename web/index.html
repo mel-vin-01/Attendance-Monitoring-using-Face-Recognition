@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <script src="eel.js"></script>
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <button class="button is-primary" onclick="openNewWindow()">Open New Window</button>
+    </div>
+</section>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Items</h1>
+            <table class="table is-bordered is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Image</th>
+                    </tr>
+                </thead>
+                <tbody id="items-body"></tbody>
+            </table>
+
+            <h2 class="title is-4">Add Item</h2>
+            <div class="field is-grouped">
+                <div class="control">
+                    <input class="input" type="text" id="name-input" placeholder="Name">
+                </div>
+                <div class="control">
+                    <input class="input" type="number" id="quantity-input" placeholder="Quantity">
+                </div>
+                <div class="control">
+                    <div class="file">
+                        <label class="file-label">
+                            <input class="file-input" type="file" id="image-input">
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label">
+                                    Choose a file…
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control">
+                    <button class="button is-primary" onclick="addItem()">Add</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="title is-4">Update Item</h2>
+            <div class="field is-grouped">
+                <div class="control">
+                    <input class="input" type="number" id="update-id" placeholder="ID">
+                </div>
+                <div class="control">
+                    <input class="input" type="text" id="update-name" placeholder="Name">
+                </div>
+                <div class="control">
+                    <input class="input" type="number" id="update-quantity" placeholder="Quantity">
+                </div>
+                <div class="control">
+                    <button class="button is-info" onclick="updateItem()">Update</button>
+                </div>
+            </div>
+
+            <h2 class="title is-4">Delete Item</h2>
+            <div class="field is-grouped">
+                <div class="control">
+                    <input class="input" type="number" id="delete-id" placeholder="ID">
+                </div>
+                <div class="control">
+                    <button class="button is-danger" onclick="deleteItem()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        async function retrieveData() {
+            const itemsBody = document.getElementById('items-body');
+            itemsBody.innerHTML = '';
+
+            const data = await eel.retrieve_data()();
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${item[0]}</td><td>${item[1]}</td><td>${item[2]}</td><td><img src="data:image/jpeg;base64,${item[3]}" style="max-width: 100px; max-height: 100px;"></td>`;
+                itemsBody.appendChild(row);
+            });
+        }
+
+        async function addItem() {
+            const nameInput = document.getElementById('name-input');
+            const quantityInput = document.getElementById('quantity-input');
+            const imageInput = document.getElementById('image-input');
+
+            const name = nameInput.value.trim();
+            const quantity = quantityInput.value.trim();
+            const imageFile = imageInput.files[0]; // Get the selected image file
+
+            if (name && quantity && imageFile) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const imageBase64 = event.target.result; // Get the base64-encoded image data
+                    await eel.add_item(name, quantity, imageBase64)();
+                    retrieveData();
+                };
+                reader.readAsDataURL(imageFile); // Convert the image file to base64
+                nameInput.value = '';
+                quantityInput.value = '';
+                imageInput.value = ''; // Reset the file input
+            }
+        }
+
+        async function updateItem() {
+            const idInput = document.getElementById('update-id');
+            const nameInput = document.getElementById('update-name');
+            const quantityInput = document.getElementById('update-quantity');
+
+            const id = idInput.value.trim();
+            const name = nameInput.value.trim();
+            const quantity = quantityInput.value.trim();
+
+            if (id && name && quantity) {
+                await eel.update_item(id, name, quantity)();
+                retrieveData();
+                idInput.value = '';
+                nameInput.value = '';
+                quantityInput.value = '';
+            }
+        }
+
+        async function deleteItem() {
+            const idInput = document.getElementById('delete-id');
+
+            const id = idInput.value.trim();
+
+            if (id) {
+                await eel.delete_item(id)();
+                retrieveData();
+                idInput.value = '';
+            }
+        }
+
+        function openNewWindow() {
+            eel.open_new_window();
+        }
+
+        retrieveData();
+    </script>
+</body>
+</html>

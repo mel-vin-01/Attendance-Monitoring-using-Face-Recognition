@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <script src="eel.js"></script>
+</head>
+<body>
+    <section class="section">
+        <div class="columns">
+            <div class="column is-half">
+                <table class="table is-bordered is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Image</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-body">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="column is-half">
+                <div class="columns is-multiline">
+                    <div class="column is-half">
+                        <iframe id="camera_1" width="100%" height="350" src="" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="column is-half">
+                        <iframe id="camera_2" width="100%" height="350" src="" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="column is-half">
+                        <iframe id="camera_3" width="100%" height="350" src="" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="column is-half">
+                        <iframe id="camera_4" width="100%" height="350" src="" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        async function retrieveData() {
+            const itemsBody = document.getElementById('items-body');
+            itemsBody.innerHTML = '';
+
+            const data = await eel.retrieve_data()();
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${item[0]}</td><td>${item[1]}</td><td>${item[2]}</td><td><img src="data:image/jpeg;base64,${item[3]}" style="max-width: 100px; max-height: 100px;"></td>`;
+                itemsBody.appendChild(row);
+            });
+        }
+
+        function update_camera(photo) {
+            // Update the src attribute of each iframe with the received photo
+            document.getElementById('camera_1').src = photo;
+            document.getElementById('camera_2').src = photo;
+            document.getElementById('camera_3').src = photo;
+            document.getElementById('camera_4').src = photo;
+        }
+
+        retrieveData();
+    </script>
+</body>
+</html>
