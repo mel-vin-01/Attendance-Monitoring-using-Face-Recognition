@@ -1,5 +1,6 @@
 import cv2
 import eel
+import sys
 import base64
 import mysql.connector
 from backend import *
@@ -191,8 +192,28 @@ def open_new_window():
 
 
 def open_window():
-    eel.init('web')
-    eel.start('attendance.html', mode='chrome', size=(1100, 580))
+    try:
+        eel.init('web')
+        eel.start('attendance.html', mode='chrome', size=(1100, 580))
+    except Exception as e:
+        err_msg = 'Could not launch a local server'
+        logging.error('{}\n{}'.format(err_msg, e.args))
+        show_error(title='Failed to initialise server',
+                   msg=err_msg)
+        sys.exit()
 
 
-eel.start('index.html', size=(1100, 580))
+def start_app():
+    try:
+        eel.init('Web')  # path to project folder
+        eel.start('index.html', size=(1100, 580))
+    except Exception as e:
+        err_msg = 'Could not launch a local server'
+        logging.error('{}\n{}'.format(err_msg, e.args))
+        show_error(title='Failed to initialise server',
+                   msg=err_msg)
+        sys.exit()
+
+
+if __name__ == "__main__":
+    start_app()
